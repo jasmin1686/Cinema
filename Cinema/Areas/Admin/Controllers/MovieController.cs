@@ -106,7 +106,7 @@ namespace Cinema.Areas.Admin.Controllers
                 Movie = movie,
                 Categories = _context.Categories.AsNoTracking().AsEnumerable(),
                 Cinemaas = _context.Cinemaas.AsNoTracking().AsEnumerable(),
-                MovieSubimgs = _context.MovieSubimgs.AsNoTracking().Where(e=>e.MovieId==id),
+                MovieSubimgs = _context.MovieSubimgs.AsNoTracking().Where(e => e.MovieId == id),
 
             });
         }
