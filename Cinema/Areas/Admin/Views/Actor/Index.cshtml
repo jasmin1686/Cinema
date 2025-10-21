@@ -62,13 +62,14 @@
 
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 
+
 <script>
     document.addEventListener("DOMContentLoaded", function () {
         const deleteButtons = document.querySelectorAll(".btn-delete");
 
         deleteButtons.forEach(button => {
             button.addEventListener("click", function (e) {
-                e.preventDefault();
+                e.preventDefault(); // stop normal navigation
 
                 const url = this.getAttribute("href");
 
@@ -83,11 +84,12 @@
                 }).then((result) => {
                     if (result.isConfirmed) {
                         Swal.fire({
-                            title: "Deleted!",
-                            text: "The actor has been deleted.",
-                            icon: "success"
+                          title: "Deleted!",
+                          text: "Your file has been deleted.",
+                          icon: "success"
                         });
 
+                        // Redirect to delete URL
                         window.location.href = url;
                     }
                 });
