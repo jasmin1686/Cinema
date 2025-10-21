@@ -1,0 +1,32 @@
+﻿@model Cinema.ViewModels.ActorVM
+
+<div class="container mt-4">
+    <h2 class="mb-3">Create Actor</h2>
+
+    <form asp-action="Create" enctype="multipart/form-data">
+        <div class="mb-3">
+            <label asp-for="Name" class="form-label">Actor Name</label>
+            <input asp-for="Name" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+            <label asp-for="Img" class="form-label">Image</label>   <!-- هنا Img مش ImgFile -->
+            <input asp-for="Img" type="file" class="form-control" />
+        </div>
+
+        <div class="mb-3">
+    <label for="MovieId" class="form-label">Movie</label>
+    <select asp-for="MovieId" class="form-select">
+        <option value="">-- Select Movie --</option>
+        @foreach (var item in ViewBag.Movies)
+        {
+            <option value="@item.Id">@item.Name</option>
+        }
+    </select>
+</div>
+
+
+        <button type="submit" class="btn btn-success">Save</button>
+        <a asp-action="Index" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
