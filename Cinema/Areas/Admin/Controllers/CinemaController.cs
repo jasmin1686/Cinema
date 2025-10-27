@@ -1,17 +1,22 @@
 ﻿using Cinema.DataAcess;
 using Cinema.Models;
+using Cinema.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Threading;
+using System.Threading.Tasks;
 
 namespace Cinema.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class CinemaController : Controller
     {
-        private ApplicationDbContext _context = new();
-        public IActionResult Index()
+        //private ApplicationDbContext _context = new();
+        private Repository<Cinemaa> _cinemaRepository ;
+
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            var cinema = _context.Cinemaas.AsNoTracking().AsQueryable();
+            var cinema = await _cinemaRepository.GetAsync(cancellationToken: cancellationToken);
             return View(cinema.AsEnumerable());
         }
         [HttpGet]
@@ -21,7 +26,7 @@ namespace Cinema.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Create(Cinemaa cinemaa, IFormFile file)
+        public async Task<IActionResult> Create(Cinemaa cinemaa, IFormFile file,CancellationToken cancellationToken)
         {
             if (file is not null && file.Length > 0)
             {
@@ -41,16 +46,18 @@ namespace Cinema.Areas.Admin.Controllers
                 cinemaa.ImgPath = fileName;
             }
 
-            _context.Cinemaas.Add(cinemaa);
-            _context.SaveChanges();
+            await _cinemaRepository.CreateAsync(cinemaa, cancellationToken);
+
+            await _cinemaRepository.commitAsync(cancellationToken);
 
             return RedirectToAction(nameof(Index));
         }
        
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id,CancellationToken cancellationToken)
         {
-            var brand = _context.Cinemaas.Find(id);
+            var brand = await _cinemaRepository.GetoneAsync(e => e.Id == id, cancellationToken: cancellationToken);
+
 
             if (brand is null)
                 return RedirectToAction("NotFoundPage", "Home");
@@ -59,9 +66,9 @@ namespace Cinema.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Cinemaa cinemaa, IFormFile file)
+        public async Task<IActionResult> Edit(Cinemaa cinemaa, IFormFile file,CancellationToken cancellationToken)
         {
-            var brandInDB = _context.Cinemaas.AsNoTracking().FirstOrDefault(e => e.Id == cinemaa.Id);
+            var brandInDB = await _cinemaRepository.GetoneAsync(e => e.Id == cinemaa.Id, cancellationToken: cancellationToken);
 
             if (brandInDB is null)
                 return RedirectToAction("NotFoundPage", "Home");
@@ -90,23 +97,22 @@ namespace Cinema.Areas.Admin.Controllers
             {
                 cinemaa.ImgPath = brandInDB.ImgPath;
             }
-            _context.Cinemaas.Update(cinemaa);
-            _context.SaveChanges();
-
+            _cinemaRepository.Update(cinemaa);
+            await _cinemaRepository.commitAsync(cancellationToken);
 
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id,CancellationToken cancellationToken)
         {
-            var cinemaa = _context.Cinemaas.Find(id);
+            var cinemaa = await _cinemaRepository.GetoneAsync(e => e.Id == id, cancellationToken: cancellationToken);
+
 
             if (cinemaa is null)
                 return RedirectToAction("NotFoundPage", "Home");
 
-            _context.Cinemaas.Remove(cinemaa);
-            _context.SaveChanges();
-
+            _cinemaRepository.Delete(cinemaa);
+            await _cinemaRepository.commitAsync(cancellationToken);
             return RedirectToAction(nameof(Index));
         }
     }

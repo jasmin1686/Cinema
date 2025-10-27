@@ -1,17 +1,20 @@
 ﻿using Cinema.DataAcess;
 using Cinema.Models;
+using Cinema.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace Cinema.Areas.Admin.Controllers
 {
     [Area("Admin")]
     public class CategoryController : Controller
     {
-        private ApplicationDbContext _context = new();
-        public IActionResult Index()
+        // private ApplicationDbContext _context = new();
+        private Repository<Category> _categoryRepository ;
+        public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            var categories = _context.Categories.AsNoTracking().AsQueryable();
+            var categories = await _categoryRepository.GetAsync(tracked:false, cancellationToken: cancellationToken);
             return View(categories.AsEnumerable());
             
         }
@@ -21,7 +24,7 @@ namespace Cinema.Areas.Admin.Controllers
             return View();
         }
         [HttpPost]
-        public IActionResult Create(Category category ,IFormFile file)
+        public async Task<IActionResult> Create(Category category ,IFormFile file,CancellationToken cancellationToken)
         {
             if (file is not null && file.Length > 0)
             {
@@ -42,15 +45,15 @@ namespace Cinema.Areas.Admin.Controllers
             }
 
             
-            _context.Categories.Add(category);
-            _context.SaveChanges();
-
+          await _categoryRepository.CreateAsync(category, cancellationToken);
+           
+          await  _categoryRepository.commitAsync(cancellationToken);
             return RedirectToAction(nameof(Index));
         }
         [HttpGet]
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id,CancellationToken cancellationToken)
         {
-            var category = _context.Categories.Find(id);
+            var category =await _categoryRepository.GetoneAsync(e=>e.Id ==id, cancellationToken: cancellationToken);
 
             if (category is null)
                 return RedirectToAction("NotFoundPage", "Home");
@@ -59,23 +62,23 @@ namespace Cinema.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(Category category)
+        public async Task<IActionResult> Edit(Category category ,CancellationToken cancellationToken)
         {
-            _context.Categories.Update(category);
-            _context.SaveChanges();
+            _categoryRepository.Update(category);
+          await  _categoryRepository.commitAsync(cancellationToken);
 
             return RedirectToAction(nameof(Index));
         }
 
-        public IActionResult Delete(int id)
+        public async Task<IActionResult> Delete(int id, CancellationToken cancellationToken)
         {
-            var category = _context.Categories.Find(id);
+            var category =await _categoryRepository.GetoneAsync(e => e.Id == id, cancellationToken: cancellationToken);
 
             if (category is null)
                 return RedirectToAction("NotFoundPage", "Home");
 
-            _context.Categories.Remove(category);
-            _context.SaveChanges();
+           _categoryRepository.Delete(category);
+           await _categoryRepository.commitAsync(cancellationToken);
 
             return RedirectToAction(nameof(Index));
         }
