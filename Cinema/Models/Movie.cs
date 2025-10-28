@@ -5,6 +5,8 @@ namespace Cinema.Models
 {
     public class Movie
     {
+        internal static int id;
+
         public int Id { get; set; }
         public string Name { get; set; }
         public string? Description { get; set; }
@@ -19,6 +21,7 @@ namespace Cinema.Models
         public Cinemaa? Cinemaa { get; set; }
 
         public ICollection<Actormovie>? Actormovies { get; set; }
-
+        public string Image { get; internal set; }
+        public int MovieId { get; internal set; }
     }
 }

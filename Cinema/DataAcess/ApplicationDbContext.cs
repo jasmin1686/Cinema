@@ -5,13 +5,19 @@ namespace Cinema.DataAcess
 {
     public class ApplicationDbContext : DbContext
     {
+        public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
+            : base(options)
+        {
+        }
+
+
         public DbSet<Movie> Movies { get; set; }
         public DbSet<Category> Categories { get; set; }
         public DbSet<MovieSubimg> MovieSubimgs { get; set; }
         public DbSet<Actor> Actors { get; set; }
         public DbSet<Cinemaa> Cinemaas { get; set; }
         public DbSet<Actormovie> Actormovies { get; set; }
-        public object MovieSubimg { get; internal set; }
+        //public object MovieSubimg { get; internal set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

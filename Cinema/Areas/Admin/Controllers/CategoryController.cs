@@ -4,6 +4,7 @@ using Cinema.Repository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using Cinema.Repository.IRepository;
 
 namespace Cinema.Areas.Admin.Controllers
 {
@@ -11,7 +12,11 @@ namespace Cinema.Areas.Admin.Controllers
     public class CategoryController : Controller
     {
         // private ApplicationDbContext _context = new();
-        private Repository<Category> _categoryRepository ;
+        private IRepository<Category> _categoryRepository ;
+        public CategoryController(IRepository<Category> categoryRepository)
+        {
+            _categoryRepository = categoryRepository;
+        }
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
             var categories = await _categoryRepository.GetAsync(tracked:false, cancellationToken: cancellationToken);

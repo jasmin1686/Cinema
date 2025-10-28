@@ -9,7 +9,7 @@ namespace Cinema.Areas.Admin.Controllers
     [Area("Admin")]
     public class ActorController : Controller
     {
-        private ApplicationDbContext _context = new();
+        private ApplicationDbContext _context;//= new();
 
 
         public IActionResult Index()

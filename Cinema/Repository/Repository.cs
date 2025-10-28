@@ -1,61 +1,58 @@
 ﻿using Cinema.DataAcess;
-using Cinema.Models;
+using Cinema.Repository.IRepository;
 using Microsoft.EntityFrameworkCore;
 using System.Linq.Expressions;
-using System.Threading.Tasks;
 
 namespace Cinema.Repository
 {
-   
-    public class Repository<T>where T : class
+    public class Repository<T> :IRepository<T> where T : class
     {
-        private ApplicationDbContext _Context = new();
-        private DbSet<T> _dbSet;
+        private readonly ApplicationDbContext _Context;
+        private readonly DbSet<T> _dbSet;
+
         public Repository(ApplicationDbContext context)
         {
             _Context = context;
             _dbSet = _Context.Set<T>();
         }
-        public async Task<T> CreateAsync(T entity , CancellationToken cancellationToken = default)
+
+        public async Task<T> CreateAsync(T entity, CancellationToken cancellationToken = default)
         {
-          var entitycreate= await _dbSet.AddAsync(entity);
-            return entitycreate.Entity;
+            var entry = await _dbSet.AddAsync(entity, cancellationToken);
+            return entry.Entity;
         }
-        public void Update(T entity)
+
+        public void Update(T entity) => _dbSet.Update(entity);
+
+        public void Delete(T entity) => _dbSet.Remove(entity);
+
+        public async Task<IEnumerable<T>> GetAsync(
+            Expression<Func<T, bool>>? filter = null,
+            bool tracked = true,
+            CancellationToken cancellationToken = default)
         {
-            _dbSet.Update(entity);
-        }
-        public void Delete(T entity)
-        {
-            _dbSet.Remove(entity);
-        }
-        public async Task<IEnumerable<T>> GetAsync(Expression<Func<T,bool>>? Expression = null, bool tracked = true, CancellationToken cancellationToken = default)
-        {
-            var entities = _dbSet.AsQueryable();
-            if(Expression is not null)
-            
-                entities = entities.Where(Expression);
-            return await entities.ToListAsync(cancellationToken);
+            IQueryable<T> query = _dbSet;
+
             if (!tracked)
-                entities = entities.AsNoTracking();
+                query = query.AsNoTracking();
+
+            if (filter is not null)
+                query = query.Where(filter);
+
+            return await query.ToListAsync(cancellationToken);
         }
-        public async Task<T?> GetoneAsync(Expression<Func<T, bool>>? Expression = null, bool tracked = true, CancellationToken cancellationToken = default
-            )
+
+        public async Task<T?> GetoneAsync(
+            Expression<Func<T, bool>>? filter = null,
+            bool tracked = true,
+            CancellationToken cancellationToken = default)
         {
-            return (await GetAsync(Expression,tracked, cancellationToken)).FirstOrDefault();
+            return (await GetAsync(filter, tracked, cancellationToken)).FirstOrDefault();
         }
-        public async Task<int> commitAsync(CancellationToken cancellationToken =default)
+
+        public async Task<int> commitAsync(CancellationToken cancellationToken = default)
         {
-            try
-            {
-                return await _Context.SaveChangesAsync();
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"Error:{ex.Message}");
-                return 0;
-            }
-           
+            return await _Context.SaveChangesAsync(cancellationToken);
         }
     }
 }

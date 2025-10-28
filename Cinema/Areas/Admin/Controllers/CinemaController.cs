@@ -1,6 +1,7 @@
 ﻿using Cinema.DataAcess;
 using Cinema.Models;
 using Cinema.Repository;
+using Cinema.Repository.IRepository;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Threading;
@@ -12,8 +13,11 @@ namespace Cinema.Areas.Admin.Controllers
     public class CinemaController : Controller
     {
         //private ApplicationDbContext _context = new();
-        private Repository<Cinemaa> _cinemaRepository ;
-
+        private IRepository<Cinemaa>_cinemaRepository ;
+        public CinemaController(IRepository<Cinemaa> cinemaRepository)
+        {
+            _cinemaRepository = cinemaRepository;
+        }
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
             var cinema = await _cinemaRepository.GetAsync(cancellationToken: cancellationToken);
