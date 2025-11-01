@@ -36,7 +36,7 @@ namespace Cinema.Areas.Admin.Controllers
 
         public async Task<IActionResult> Index(CancellationToken cancellationToken)
         {
-            
+            // هات كل الأفلام (من غير الفلتر الغلط على Movie.id)
             var movies = await _movieRepository.GetAsync(tracked: false, cancellationToken: cancellationToken);
 
             
