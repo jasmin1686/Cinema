@@ -5,7 +5,7 @@ using System.Linq.Expressions;
 
 namespace Cinema.Repository
 {
-    public class Repository<T> :IRepository<T> where T : class
+    public class Repository<T> : IRepository<T> where T : class
     {
         private readonly ApplicationDbContext _Context;
         private readonly DbSet<T> _dbSet;
@@ -53,6 +53,11 @@ namespace Cinema.Repository
         public async Task<int> commitAsync(CancellationToken cancellationToken = default)
         {
             return await _Context.SaveChangesAsync(cancellationToken);
+        }
+
+        public Task AddAsync(object value)
+        {
+            throw new NotImplementedException();
         }
     }
 }

@@ -27,6 +27,6 @@ namespace Cinema.Repository.IRepository
 
 
          Task<int> commitAsync(CancellationToken cancellationToken = default);
-       
+        Task AddAsync(object value);
     }
 }

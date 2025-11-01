@@ -1,9 +1,12 @@
 ﻿using Cinema.Models;
 using Microsoft.EntityFrameworkCore;
 
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+using Cinema.ViewModels;
+
 namespace Cinema.DataAcess
 {
-    public class ApplicationDbContext : DbContext
+    public class ApplicationDbContext : IdentityDbContext<ApplicationUser>
     {
         public ApplicationDbContext(DbContextOptions<ApplicationDbContext> options)
             : base(options)
@@ -17,6 +20,7 @@ namespace Cinema.DataAcess
         public DbSet<Actor> Actors { get; set; }
         public DbSet<Cinemaa> Cinemaas { get; set; }
         public DbSet<Actormovie> Actormovies { get; set; }
+        public DbSet<ApplicationUserOTP>ApplicationUserOTPs { get; set; }
         //public object MovieSubimg { get; internal set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
@@ -45,5 +49,6 @@ namespace Cinema.DataAcess
                 .HasForeignKey(am => am.MovieId)
                 .OnDelete(DeleteBehavior.Restrict);
         }
+        public DbSet<Cinema.ViewModels.RegisterVM> RegisterVM { get; set; } = default!;
     }
 }
