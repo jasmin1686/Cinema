@@ -1,5 +1,6 @@
 ﻿using Cinema.Models;
 using Cinema.Repository.IRepository;
+using Cinema.Utitlies;
 using Cinema.ViewModels;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Identity.UI.Services;
@@ -68,7 +69,7 @@ namespace Cinema.Areas.Identity.Controllers
             await _emailSender.SendEmailAsync(registerVM.Email, "Cinema - Confirm Your Email!"
                 , $"<h1>Confirm Your Email By Clicking <a href='{link}'>Here</a></h1>");
 
-           // await _userManager.AddToRoleAsync(user, SD.CUSTOMER_ROLE);
+           await _userManager.AddToRoleAsync(user, SD.CUSTOMER_ROLE);
 
             return RedirectToAction("Login");
         }
